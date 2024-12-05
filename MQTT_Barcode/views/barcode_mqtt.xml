@@ -1,0 +1,61 @@
+<odoo>
+    <data>
+        <record id="view_barcode_mqtt_form" model="ir.ui.view">
+            <field name="name">barcode_mqtt.form</field>
+            <field name="model">barcode_mqtt.model</field>
+            <field name="arch" type="xml">
+                <form string="MQTT Connection">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="broker_host"/>
+                            <field name="broker_port"/>
+                            <field name="mqtt_topic"/>
+                        </group>
+                        <group>
+                            <field name="connection_status" readonly="1"/>
+                            <field name="last_message" readonly="1"/>
+                            <field name="last_message_timestamp" readonly="1"/>
+                        </group>
+                        <footer>
+                            <button name="manual_subscribe" string="Subscribe" type="object" class="btn-primary"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_barcode_mqtt_list" model="ir.ui.view">
+            <field name="name">barcode_mqtt.list</field>
+            <field name="model">barcode_mqtt.model</field>
+            <field name="arch" type="xml">
+                <list string="MQTT Connections">
+                    <field name="name"/>
+                    <field name="broker_host"/>
+                    <field name="broker_port"/>
+                    <field name="mqtt_topic"/>
+                    <field name="connection_status"/>
+                    <field name="last_message"/>
+                    <field name="last_message_timestamp"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_barcode_mqtt" model="ir.actions.act_window">
+            <field name="name">MQTT Connections</field>
+            <field name="res_model">barcode_mqtt.model</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="model_barcode_mqtt_model" model="ir.model">
+            <field name="model">barcode_mqtt.model</field>
+            <field name="name">barcode_mqtt.model</field>
+        </record>
+
+
+        <menuitem id="menu_barcode_mqtt_root" name="MQTT Verbindungen" sequence="1"/>
+        <menuitem id="menu_barcode_mqtt_connection" name="Connections" parent="menu_barcode_mqtt_root"
+                  action="action_barcode_mqtt"/>
+
+    </data>
+</odoo>
