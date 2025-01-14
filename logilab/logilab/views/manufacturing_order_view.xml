@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_mrp_production_form" model="ir.ui.view">
+        <field name="name">mrp.production.form</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet" position="before">
+                <div class="alert alert-info" role="alert">
+                    <field name="state" invisible="1" decoration-info="1"/>
+                </div>
+            </xpath>
+
+            <xpath expr="//field[@name='name']" position="after">
+                <group>
+                    <field name="kistenreferenz_id" style="font-size: 20px; width: 300px;"/>
+                    <field name="product_blueprint_url" invisible="1"/>
+                </group>
+            </xpath>
+
+            <!-- Corrected invisible attributes -->
+            <xpath expr="//button[@name='button_mark_done'][1]" position="attributes">
+                <attribute name="invisible">state not in ('confirmed', 'progress') or (move_raw_ids and not show_produce)</attribute>
+                <attribute name="confirm">There are no components to consume. Are you still sure you want to continue?</attribute>
+                <attribute name="data-hotkey">g</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_mark_done'][2]" position="attributes">
+                <attribute name="invisible">state not in ('confirmed', 'progress') or (move_raw_ids and not show_produce_all)</attribute>
+                <attribute name="confirm">There are no components to consume. Are you still sure you want to continue?</attribute>
+                <attribute name="data-hotkey">g</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='action_confirm']" position="attributes">
+                <attribute name="invisible">state != 'draft'</attribute>
+                <attribute name="data-hotkey">q</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_plan']" position="attributes">
+                <attribute name="invisible">not state in ('confirmed', 'progress', 'to_close') or workorder_ids or is_planned</attribute>
+                <attribute name="data-hotkey">z</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_unplan']" position="attributes">
+                <attribute name="invisible">not is_planned or state in ('cancel', 'done')</attribute>
+                <attribute name="data-hotkey">z</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

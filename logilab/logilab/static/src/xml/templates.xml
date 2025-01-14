@@ -1,0 +1,16 @@
+<!-- custom_addons/logilab/static/src/xml/templates.xml -->
+
+<templates xml:space="preserve">
+    <t t-name="logilab.MrpProductionForm">
+        <t t-call="web.FormRenderer">
+            <div t-attf-class="alert {{ state.status ? getStatusClass(state.status) : 'bg-secondary' }}" role="alert">
+                Status: <t t-esc="state.status"/>
+            </div>
+            <div>Kistenreferenz: <t t-esc="state.kistenreferenz"/></div>
+            <t t-if="state.pdfUrl"> <iframe t-att-src="state.pdfUrl" width="100%" height="600px"></iframe></t>
+            <t t-foreach="props.arch.children" t-as="child">
+                <t t-call="{{ child }}"></t>
+            </t>
+        </t>
+    </t>
+</templates>
