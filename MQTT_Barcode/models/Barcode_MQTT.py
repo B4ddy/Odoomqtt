@@ -45,16 +45,29 @@ class BarcodeMQTTModel(models.Model):
             payload = msg.payload.decode()
             _logger.info(f"Received message: '{payload}' on topic '{msg.topic}' for record {record_id}")
 
-            with db_connect(self.env.registry.db_name).cursor() as cr:  # new cursor weil threadsafe
+            with db_connect(self.env.registry.db_name).cursor() as cr:
                 env = api.Environment(cr, self.env.uid, self.env.context)
                 record = env['barcode_mqtt.model'].browse(record_id).sudo()
 
                 if record.exists():
+                    # Store the old last_message before updating
+                    old_last_message = record.last_message
+
                     record.with_context(from_mqtt=True).write({
                         'last_message': payload,
                         'last_message_timestamp': int(fields.Datetime.now().timestamp()),
                     })
                     cr.commit()
+
+                    # Trigger processing for 'Fertigung' connection
+                    if record.name == 'Fertigung' and old_last_message != payload:
+                        try:
+                            # Use sudo to ensure permissions
+                            mrp_production = env['mrp.production'].sudo()
+                            mrp_production._on_mqtt_last_message_changed(payload)
+                            _logger.info(f"Processed mqtt_last_message_changed for record {record.name}")
+                        except Exception as e:
+                            _logger.exception(f"Error processing message change: {e}")
 
         except Exception as e:
             _logger.exception(f"Error processing message: {e}")
@@ -182,4 +195,3 @@ class BarcodeMQTTModel(models.Model):
                 _logger.info(f"MQTT client started for record {record.id}.")
             except Exception as e:
                 _logger.exception(f"Failed to start MQTT client for record {record.id}: {e}")
-
